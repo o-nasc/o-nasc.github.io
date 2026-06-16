@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestão de Carteiras · Conéctar</title>
+<style>
+
+:root{
+  --ink:#10362B;
+  --ink-soft:#51685D;
+  --ink-faint:#7E948A;
+  --bg:#F2F5F1;
+  --card:#FFFFFF;
+  --line:#E1E8E0;
+  --line-strong:#CBD7CC;
+  --green:#0BC07D;
+  --green-deep:#089A64;
+  --green-soft:#E2F7EE;
+  --coral:#F58561;
+  --coral-soft:#FDEDE6;
+  --st-critico:#8E1F12;
+  --st-risco:#DD4F3B;
+  --st-atencao:#DD9A1F;
+  --st-ok:#0BA56E;
+  --st-novo:#1791A3;
+  --st-critico-soft:#F7E4E1;
+  --st-risco-soft:#FBE9E5;
+  --st-atencao-soft:#FAF0DB;
+  --st-ok-soft:#E2F7EE;
+  --st-novo-soft:#E0F2F5;
+  --neutral-soft:#EDF1ED;
+  --shadow:0 1px 2px rgba(16,54,43,.05),0 6px 18px rgba(16,54,43,.06);
+  --shadow-lift:0 2px 4px rgba(16,54,43,.07),0 12px 30px rgba(16,54,43,.10);
+  --r-card:16px;
+  --r-input:10px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --font-display:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select{font:inherit;color:var(--ink)}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:6px}
+::selection{background:var(--green-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ============ Masthead ============ */
+.mast{background:#0D3429;color:#fff;position:relative;overflow:hidden}
+.mast::after{content:"";position:absolute;right:-60px;top:-90px;width:340px;height:340px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 824 812"><path fill="%23FFFFFF" d="M673.6,200.9c0,0-115.3,482.1-487.7,397.6c-6.4-1.5-9.4-6-6.2-12.5c16.7-33.6,44.2-100.4,138-178.3c18.3-15.2,3.9-12-3.6-7.6c-84.9,50-121.1,95-147.1,152.3c-4.7,10.4-10.1,12.2-7.1-6C203.7,287.8,467.7,268.9,673.6,200.9z"/></svg>') no-repeat center/contain;opacity:.05;pointer-events:none}
+.mast-in{max-width:1280px;margin:0 auto;padding:22px 24px 50px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:13px}
+.brand svg{width:42px;height:42px;flex:none}
+.brand h1{font-family:var(--font-display);font-size:21px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.brand p{font-size:12.5px;color:#A9C6B9;margin-top:2px}
+.mast-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.file-pill{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:12px;color:#A9C6B9;text-align:right}
+.file-pill strong{color:#fff;font-weight:600;font-size:12.5px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-ghost{padding:7px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.28);color:#fff;font-size:12.5px;font-weight:600;transition:background .15s,border-color .15s}
+.btn-ghost:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.45)}
+
+/* ============ Shell ============ */
+.shell{max-width:1280px;margin:0 auto;padding:0 24px 56px}
+
+/* ============ Setup / dropzone ============ */
+.setup{margin-top:-26px}
+.drop{background:var(--card);border:1.5px dashed var(--line-strong);border-radius:var(--r-card);box-shadow:var(--shadow);padding:64px 32px;text-align:center;transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--green);background:var(--green-soft)}
+.drop svg{width:54px;height:54px;margin-bottom:14px}
+.drop h2{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:6px}
+.drop p{color:var(--ink-soft);font-size:13.5px;max-width:480px;margin:0 auto 18px}
+.btn{display:inline-block;padding:10px 22px;border-radius:99px;background:var(--green);color:#fff;font-weight:650;font-size:14px;box-shadow:0 2px 8px rgba(11,192,125,.35);transition:background .15s,transform .12s}
+.btn:hover{background:var(--green-deep)}
+.btn:active{transform:scale(.98)}
+.drop .priv{margin-top:20px;margin-bottom:0;font-size:12px;color:var(--ink-faint)}
+.drop .err{margin-top:16px;margin-bottom:0;color:var(--st-risco);font-weight:600;font-size:13px}
+
+/* ============ KPIs ============ */
+.kpis{margin-top:-26px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:15px 17px 13px;text-align:left;border:1.5px solid transparent;transition:box-shadow .15s,border-color .15s,transform .12s;position:relative}
+.kpi:hover{box-shadow:var(--shadow-lift)}
+.kpi:active{transform:scale(.99)}
+.kpi .lbl{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint)}
+.kpi .val{font-family:var(--font-display);font-size:37px;font-weight:750;letter-spacing:-.02em;line-height:1.1;margin-top:3px;font-variant-numeric:tabular-nums}
+.kpi .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;min-height:17px}
+.kpi.on{border-color:var(--accent,var(--green))}
+.kpi .dot{position:absolute;top:17px;right:15px;width:8px;height:8px;border-radius:99px;background:var(--accent,transparent)}
+.kpi.k-acao{--accent:var(--st-risco)}
+.kpi.k-acao .val{color:var(--st-risco)}
+.kpi.k-atencao{--accent:var(--st-atencao)}
+.kpi.k-atencao .val{color:var(--st-atencao)}
+.kpi.k-ok{--accent:var(--st-ok)}
+.kpi.k-ok .val{color:var(--st-ok)}
+.kpi.k-novo{--accent:var(--st-novo)}
+.kpi.k-novo .val{color:var(--st-novo)}
+
+.distro{margin-top:12px;background:var(--card);border-radius:99px;box-shadow:var(--shadow);padding:5px;display:flex;gap:3px;height:22px}
+.distro button{border-radius:99px;min-width:8px;transition:opacity .15s,flex-grow .25s ease;opacity:.9}
+.distro button:hover{opacity:1}
+.distro button.dim{opacity:.25}
+
+/* ============ Toolbar ============ */
+.toolbar{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search{flex:1;min-width:200px;position:relative}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-faint);pointer-events:none}
+.search input{width:100%;padding:9px 13px 9px 35px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--card);box-shadow:var(--shadow);font-size:13.5px}
+.search input::placeholder{color:var(--ink-faint)}
+.search input:focus{border-color:var(--coral);outline:none;box-shadow:0 0 0 3px rgba(245,133,97,.18)}
+select.sel{padding:9px 30px 9px 12px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="%2351685D" stroke-width="1.6" stroke-linecap="round"/></svg>') no-repeat right 11px center;box-shadow:var(--shadow);font-size:13px;appearance:none;-webkit-appearance:none;cursor:pointer;max-width:200px}
+select.sel:focus{border-color:var(--coral);outline:none;box-shadow:0 0 0 3px rgba(245,133,97,.18)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{padding:6.5px 13px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:12.5px;font-weight:600;color:var(--ink-soft);box-shadow:var(--shadow);transition:all .13s}
+.chip:hover{border-color:var(--line-strong);color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.on.c-prime{background:var(--coral);border-color:var(--coral)}
+.chip-sep{width:1px;height:18px;background:var(--line-strong);margin:0 3px}
+.btn-cfg{padding:8px 14px;border-radius:var(--r-input);border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);font-size:12.5px;font-weight:600;color:var(--ink-soft);white-space:nowrap}
+.btn-cfg:hover{color:var(--ink);border-color:var(--line-strong)}
+.btn-cfg .num{color:var(--ink)}
+.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);font-size:12.5px;font-weight:600;color:var(--ink-soft);white-space:nowrap;transition:color .13s,border-color .13s}
+.toggle:hover{border-color:var(--line-strong);color:var(--ink)}
+.toggle input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.tg-track{position:relative;width:32px;height:18px;border-radius:99px;background:var(--line-strong);transition:background .15s;flex:none}
+.tg-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:99px;background:#fff;box-shadow:0 1px 2px rgba(16,54,43,.25);transition:transform .15s}
+.toggle input:checked + .tg-track{background:var(--green)}
+.toggle input:checked + .tg-track .tg-thumb{transform:translateX(14px)}
+.toggle input:focus-visible + .tg-track{outline:2px solid var(--green);outline-offset:2px}
+.toggle.on{color:var(--ink);border-color:var(--green)}
+
+/* ============ Settings ============ */
+.settings{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow);padding:18px 20px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:24px}
+.set-g h3{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px}
+.set-g .cur{font-family:var(--font-display);font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.set-g .hint{font-size:12px;color:var(--ink-soft);margin-top:7px;line-height:1.4}
+input[type=range]{width:100%;margin-top:9px;accent-color:var(--green);height:22px}
+.hol-add{display:flex;gap:7px;margin-bottom:9px}
+.hol-add input[type=date]{flex:1;padding:7px 10px;border:1px solid var(--line);border-radius:var(--r-input);font-size:13px;background:#fff}
+.hol-add button{padding:7px 15px;border-radius:var(--r-input);background:var(--green);color:#fff;font-weight:650;font-size:13px}
+.hol-add button:hover{background:var(--green-deep)}
+.hol-list{display:flex;gap:6px;flex-wrap:wrap}
+.hol-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 7px 4px 11px;border-radius:99px;background:var(--neutral-soft);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.hol-tag button{width:17px;height:17px;border-radius:99px;background:rgba(16,54,43,.10);font-size:11px;line-height:1;display:grid;place-items:center;color:var(--ink-soft)}
+.hol-tag button:hover{background:var(--st-risco);color:#fff}
+.hol-empty{font-size:12.5px;color:var(--ink-faint)}
+
+/* ============ Blocks ============ */
+.blocks{margin-top:18px;display:flex;flex-direction:column;gap:14px}
+.block{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);overflow:hidden}
+.blk-h{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;text-align:left}
+.blk-h:hover{background:#FAFCFA}
+.blk-h .car{width:18px;height:18px;border-radius:6px;display:grid;place-items:center;color:var(--ink-faint);transition:transform .18s}
+.block.open .blk-h .car{transform:rotate(90deg)}
+.blk-h .ttl{font-size:13px;font-weight:750;letter-spacing:.05em;text-transform:uppercase}
+.blk-h .cnt{font-size:12.5px;font-weight:700;padding:2px 9px;border-radius:99px;font-variant-numeric:tabular-nums}
+.blk-h .desc{font-size:12px;color:var(--ink-faint);margin-left:auto}
+.blk-body{display:none;border-top:1px solid var(--line)}
+.block.open .blk-body{display:block}
+.blk-empty{padding:22px 18px;font-size:13px;color:var(--ink-faint)}
+
+/* ============ Table ============ */
+.tscroll{overflow-x:auto}
+.thead,.row{display:grid;grid-template-columns:30px minmax(210px,1.5fr) 50px 136px 78px 92px 86px 84px 94px minmax(200px,1.7fr);gap:8px;align-items:center;min-width:1080px}
+.thead{padding:8px 18px 8px 12px;border-bottom:1px solid var(--line);background:#FBFCFB}
+.thead button{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);text-align:left;display:flex;align-items:center;gap:3px;padding:2px 0}
+.thead button:hover{color:var(--ink)}
+.thead button.on{color:var(--ink)}
+.thead button .arr{font-size:9px}
+.rowwrap{border-bottom:1px solid var(--line)}
+.rowwrap:last-child{border-bottom:none}
+.row{width:100%;padding:9px 18px 9px 12px;text-align:left;position:relative;transition:background .12s;cursor:pointer}
+.row::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:4px;border-radius:0 4px 4px 0;background:var(--stc,transparent)}
+.row:hover{background:#FAFCFA}
+.row.is-prime{background:linear-gradient(90deg,rgba(245,133,97,.055),rgba(245,133,97,.015))}
+.row.is-prime:hover{background:linear-gradient(90deg,rgba(245,133,97,.10),rgba(245,133,97,.03))}
+.row .car{width:17px;height:17px;color:var(--ink-faint);transition:transform .18s;display:grid;place-items:center}
+.row.open>.car,.row.open .car{transform:rotate(90deg)}
+.cell-name{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cell-name .nm{display:flex;align-items:center;gap:6px;font-weight:650;font-size:13.5px;min-width:0}
+.cell-name .nm .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.star{color:var(--coral);font-size:13px;flex:none}
+.cell-name .tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:700;padding:1.5px 8px;border-radius:99px;white-space:nowrap}
+.tag-prime{background:var(--coral);color:#fff}
+.tag-grupo{background:var(--neutral-soft);color:var(--ink-soft)}
+.tag-resp{background:#EAF1FB;color:#2D5A9E}
+.tag-plus{background:var(--green-soft);color:var(--green-deep)}
+.tag-units{background:var(--ink);color:#fff}
+.tier{display:inline-grid;place-items:center;min-width:34px;padding:3px 7px;border-radius:8px;font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.tier-G{background:var(--ink);color:#fff}
+.tier-MP{background:#3E6B5B;color:#fff}
+.tier-MM{background:#7FA396;color:#fff}
+.tier-P{background:var(--neutral-soft);color:var(--ink-soft)}
+.cell{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.cell strong{color:var(--ink);font-weight:650}
+.cell.up{color:var(--st-ok);font-weight:650}
+.cell.down{color:var(--st-risco);font-weight:650}
+.cell-sinal{font-size:12.5px;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px}
+.cell-sinal .s-txt{line-height:1.35}
+.cell-sinal .s-txt b{color:var(--ink);font-weight:650}
+.sev-chips{display:flex;gap:4px;flex-wrap:wrap}
+.sev{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:99px;white-space:nowrap}
+.sev-extremo{background:var(--st-critico);color:#fff}
+.sev-grave{background:var(--st-risco-soft);color:var(--st-critico)}
+.sev-medio{background:var(--st-atencao-soft);color:#8A5E0A}
+.sev-leve{background:var(--neutral-soft);color:var(--ink-soft)}
+.sev-cliente{background:#EEF0F4;color:#5B6470}
+.sev-combinado{background:var(--st-novo-soft);color:#0E6B7A}
+.pulse{color:var(--ink-soft);display:block}
+
+/* group children */
+.units{background:#F8FAF8;border-top:1px solid var(--line)}
+.units .rowwrap{border-bottom:1px solid var(--line)}
+.units .row{padding-left:34px}
+.units .row::after{content:"";position:absolute;left:21px;top:0;bottom:0;width:1.5px;background:var(--line-strong)}
+.units .row::before{left:22px;border-radius:4px}
+
+/* drilldown */
+.drill{padding:6px 18px 18px 42px;background:#F8FAF8;border-top:1px dashed var(--line)}
+.units .drill{padding-left:56px}
+.drill-grid{display:grid;grid-template-columns:minmax(230px,1fr) 2fr;gap:22px;padding-top:12px}
+.drill h4{font-size:11px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px}
+.facts{display:flex;flex-direction:column;gap:6px}
+.fact{display:flex;justify-content:space-between;gap:14px;font-size:12.5px;border-bottom:1px dotted var(--line);padding-bottom:5px}
+.fact span{color:var(--ink-faint)}
+.fact b{font-weight:650;font-variant-numeric:tabular-nums;text-align:right}
+.fals{display:flex;flex-direction:column;gap:9px;max-height:320px;overflow-y:auto;padding-right:6px}
+.fal{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 13px}
+.fal-h{display:flex;align-items:center;gap:9px;margin-bottom:5px;flex-wrap:wrap}
+.fal-h .fd{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.fal-h .ff{font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.fal-obs{font-size:12.5px;color:var(--ink-soft);margin-top:5px;line-height:1.4}
+.fal-none{font-size:13px;color:var(--ink-faint);padding:8px 2px}
+
+/* footer */
+.legend{margin-top:20px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-soft)}
+.legend .li{display:flex;align-items:center;gap:6px}
+.legend .sw{width:10px;height:10px;border-radius:3px}
+.legend .note{margin-left:auto;color:var(--ink-faint)}
+
+/* KPI GMV em risco */
+.kpi.k-gmv{--accent:var(--st-critico)}
+.kpi.k-gmv .val{color:var(--st-critico);font-size:29px}
+
+/* Roteamento de churn */
+.tag-contagio{background:var(--st-critico);color:#fff}
+.tag-absorcao{background:var(--st-novo-soft);color:var(--st-novo)}
+.row.is-absorcao .cell-name .txt{opacity:.72}
+.route-note{margin:0 0 14px;padding:11px 14px;border-radius:10px;font-size:12.5px;line-height:1.45}
+.route-note b{font-weight:750}
+.rn-contagio{background:var(--st-critico-soft);color:var(--st-critico)}
+.rn-absorcao{background:var(--st-novo-soft);color:var(--st-novo)}
+.rn-falhag{background:var(--st-atencao-soft);color:#8a5a06}
+
+/* Cobertura por responsável */
+.cover-wrap{margin-top:12px;background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);overflow:hidden}
+.cover-h{display:flex;align-items:center;gap:10px;width:100%;padding:13px 16px;text-align:left}
+.cover-h .car{width:18px;height:18px;display:grid;place-items:center;color:var(--ink-faint);transition:transform .18s}
+.cover-wrap.open .cover-h .car{transform:rotate(90deg)}
+.cover-h .ttl{font-family:var(--font-display);font-weight:700;font-size:14px}
+.cover-h .desc{font-size:12px;color:var(--ink-faint);margin-left:auto}
+.cover-h:hover .ttl{color:var(--ink)}
+.cover-body{border-top:1px solid var(--line);overflow-x:auto}
+.cover-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+.cover-tbl th{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);text-align:right;padding:9px 14px;background:#FBFCFB;border-bottom:1px solid var(--line)}
+.cover-tbl th:first-child{text-align:left}
+.cover-tbl td{padding:9px 14px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.cover-tbl tbody tr:last-child td{border-bottom:none}
+.cover-tbl td.c-resp{text-align:left;font-weight:600;color:var(--ink)}
+.cover-tbl tbody tr{cursor:pointer}
+.cover-tbl tbody tr:hover{background:var(--bg)}
+.cover-tbl td.c-crit{color:var(--st-critico);font-weight:750}
+.cover-tbl td.c-risc{color:var(--st-risco);font-weight:750}
+.cover-tbl td.c-att{color:var(--st-atencao);font-weight:750}
+.cover-tbl td.c-gmv{font-weight:750;color:var(--ink)}
+.cover-tbl tr.cover-none td.c-resp{color:var(--ink-faint)}
+
+/* Abas de visão */
+.viewtabs{display:inline-flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px;margin-bottom:18px}
+.vtab{padding:7px 18px;border-radius:99px;font-family:var(--font-display);font-weight:700;font-size:13.5px;color:var(--ink-faint);transition:color .14s,background .14s}
+.vtab:hover{color:var(--ink-soft)}
+.vtab.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+
+/* Página de gestão */
+.gx-head{margin-bottom:16px}
+.gx-head h2{font-family:var(--font-display);font-size:21px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.gx-sub{font-size:13px;color:var(--ink-faint);margin-top:3px}
+.gx-card{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:16px}
+.gx-card-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.gx-card-h h3{font-family:var(--font-display);font-size:15.5px;font-weight:750;color:var(--ink)}
+.gx-hint{font-size:11.5px;color:var(--ink-faint);margin-left:auto;text-align:right}
+.gx-tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.gx-tile{border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+.gx-tile .t-lbl{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint)}
+.gx-tile .t-val{font-family:var(--font-display);font-size:27px;font-weight:800;line-height:1.1;margin-top:5px;color:var(--ink)}
+.gx-tile .t-sub{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
+.gx-tile.good .t-val{color:var(--st-ok)}
+.gx-tile.warn .t-val{color:var(--st-risco)}
+.gx-tile.bad .t-val{color:var(--st-critico)}
+.gx-read{font-size:12.5px;color:var(--ink-soft);margin-top:13px;line-height:1.45}
+.gx-read b{font-weight:750;color:var(--ink)}
+.gx-chart svg{width:100%;height:auto;display:block}
+.gx-xlab{font-size:11px;fill:var(--ink-faint)}
+.gx-callout{display:flex;align-items:baseline;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.gx-callout .co-val{font-family:var(--font-display);font-size:30px;font-weight:800;color:var(--st-critico)}
+.gx-callout .co-delta{font-size:13px;font-weight:700}
+.co-up{color:var(--st-critico)} .co-down{color:var(--st-ok)}
+.gx-scroll{overflow-x:auto}
+.gx-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:660px}
+.gx-tbl th{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);text-align:right;padding:8px 10px;border-bottom:1px solid var(--line)}
+.gx-tbl th:first-child{text-align:left}
+.gx-tbl td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.gx-tbl tbody tr:last-child td{border-bottom:none}
+.gx-tbl td.f-nome{text-align:left;font-weight:650;color:var(--ink)}
+.gx-tbl td.f-ext{color:var(--st-critico);font-weight:750}
+.gx-tbl td.f-grave{color:var(--st-risco);font-weight:700}
+.f-bar{display:flex;height:7px;border-radius:4px;overflow:hidden;min-width:90px;background:var(--bg)}
+.f-bar i{display:block;height:100%}
+.gx-trend-up{color:var(--st-critico);font-weight:700}
+.gx-trend-down{color:var(--st-ok);font-weight:700}
+.gx-trend-flat{color:var(--ink-faint)}
+@media (max-width:760px){.gx-tiles{grid-template-columns:repeat(2,1fr)}}
+
+@media (max-width:1240px){
+  .thead,.row{grid-template-columns:30px minmax(200px,1.5fr) 50px 136px 78px 92px 84px 94px minmax(180px,1.6fr);min-width:960px}
+  .col-entrega{display:none}
+}
+@media (max-width:1080px){.kpis{grid-template-columns:repeat(3,1fr)}.settings{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .settings{grid-template-columns:1fr}
+  .mast-in{padding:18px 16px 44px}
+  .shell{padding:0 12px 40px}
+  .drill-grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== Gestão de carteiras ===== */
+.gx-head{margin-bottom:16px}
+.gx-head h2{font-family:var(--font-display);font-size:21px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.gx-sub{font-size:13px;color:var(--ink-faint);margin-top:3px}
+.opgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+.opcard{display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow);padding:16px 17px;transition:border-color .14s,transform .14s,box-shadow .14s}
+.opcard:hover{border-color:var(--line-strong);transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,54,43,.10)}
+.opcard.special{background:linear-gradient(180deg,var(--coral-soft),var(--card) 62%);border-color:#F3C8B9}
+.oc-top{display:flex;align-items:center;gap:8px}
+.oc-name{font-family:var(--font-display);font-weight:750;font-size:15.5px;color:var(--ink)}
+.oc-flag{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--coral);background:#fff;border:1px solid #F3C8B9;border-radius:99px;padding:2px 8px}
+.oc-sub{font-size:12px;color:var(--ink-faint);margin-top:3px}
+.oc-stats{display:flex;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.oc-stat{display:flex;flex-direction:column;gap:1px}
+.oc-stat .s-val{font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--ink);font-variant-numeric:tabular-nums}
+.oc-stat .s-val.risk{color:var(--st-critico)}
+.oc-stat .s-lbl{font-size:10.5px;color:var(--ink-faint)}
+.back{display:inline-flex;align-items:center;gap:6px;font-weight:650;font-size:13px;color:var(--ink-soft);padding:7px 13px;border-radius:99px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);margin-bottom:14px}
+.back:hover{border-color:var(--line-strong);color:var(--ink)}
+.bk-head{margin-bottom:12px}
+.bk-head h2{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--ink)}
+.bk-search{width:100%;max-width:340px;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:13.5px;color:var(--ink);margin-bottom:16px}
+.bk-search:focus{outline:2px solid var(--green);outline-offset:1px;border-color:var(--green)}
+.bk-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.bk-kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;box-shadow:var(--shadow)}
+.bk-kpi .v{display:block;font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.bk-kpi .v.risk{color:var(--st-critico)}
+.bk-kpi .l{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+.drill-grid{grid-template-columns:1fr;gap:18px}
+.ped-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.ped-tbl th{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+.ped-tbl td{padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+.ped-tbl .val{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ped-tbl .dt{white-space:nowrap;font-variant-numeric:tabular-nums}
+.ped-tbl tbody tr:last-child td{border-bottom:none}
+.ped-occ{display:flex;flex-wrap:wrap;gap:4px}
+.ped-ok{color:var(--st-ok);font-weight:650}
+@media (max-width:760px){.bk-kpis{grid-template-columns:repeat(2,1fr)}}
+.opcard{cursor:pointer}
+.opcard.active{border-color:var(--green);box-shadow:0 0 0 2px var(--green-soft),var(--shadow)}
+.opcard.special.active{border-color:var(--coral);box-shadow:0 0 0 2px var(--coral-soft),var(--shadow)}
+.detail{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow);padding:18px 20px;animation:detailIn .18s ease}
+.dt-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.dt-head h3{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--ink)}
+.dt-close{margin-left:auto;font-size:12.5px;font-weight:650;color:var(--ink-soft);padding:6px 13px;border-radius:99px;border:1px solid var(--line);background:var(--card)}
+.dt-close:hover{border-color:var(--line-strong);color:var(--ink)}
+@keyframes detailIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.detail{animation:none}}
+
+</style>
+</head>
+<header class="mast">
+  <div class="mast-in">
+    <div class="brand">
+      <svg viewBox="0 0 824 812" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#0BC07D" d="M673.6,200.9c0,0-115.3,482.1-487.7,397.6c-6.4-1.5-9.4-6-6.2-12.5c16.7-33.6,44.2-100.4,138-178.3c18.3-15.2,3.9-12-3.6-7.6c-84.9,50-121.1,95-147.1,152.3c-4.7,10.4-10.1,12.2-7.1-6C203.7,287.8,467.7,268.9,673.6,200.9z"/></svg>
+      <div>
+        <h1>Gestão de Carteiras</h1>
+        <p>Conéctar · carteiras por operador</p>
+      </div>
+    </div>
+    <div class="mast-meta" id="mastMeta" hidden>
+      <div class="file-pill">
+        <strong id="metaFile"></strong>
+        <span id="metaInfo"></span>
+      </div>
+      <button class="btn-ghost" id="btnSwap">Trocar arquivo</button>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+
+  <!-- Setup -->
+  <section class="setup" id="setup">
+    <div class="drop" id="dropZone">
+      <svg viewBox="0 0 824 812" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#0BC07D" opacity=".85" d="M673.6,200.9c0,0-115.3,482.1-487.7,397.6c-6.4-1.5-9.4-6-6.2-12.5c16.7-33.6,44.2-100.4,138-178.3c18.3-15.2,3.9-12-3.6-7.6c-84.9,50-121.1,95-147.1,152.3c-4.7,10.4-10.1,12.2-7.1-6C203.7,287.8,467.7,268.9,673.6,200.9z"/></svg>
+      <h2>Arraste o CSV de pedidos aqui</h2>
+      <p>Use a exportação de pedidos do Airtable. O radar lê a cadência de compra, a tendência de volume e as falhas recentes de cada cliente e mostra quem precisa de ação hoje.</p>
+      <button class="btn" id="btnPick">Escolher arquivo</button>
+      <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+      <p class="priv">Tudo roda no seu navegador. Nada é enviado para fora.</p>
+      <p class="err" id="loadErr" hidden></p>
+    </div>
+  </section>
+
+  <!-- Board -->
+    <section id="board" hidden>
+
+    <div class="gx-head">
+      <h2>Carteiras por operador</h2>
+      <p class="gx-sub" id="gridSub"></p>
+    </div>
+    <div class="opgrid" id="opgrid"></div>
+
+    <div class="detail" id="detail" hidden>
+      <div class="dt-head">
+        <h3 id="dtTitle"></h3>
+        <button class="dt-close" id="dtClose">Fechar &#10005;</button>
+      </div>
+      <input class="bk-search" id="bkSearch" type="search" placeholder="Buscar restaurante ou grupo">
+      <div class="bk-kpis" id="bkKpis"></div>
+      <div class="blocks" id="bkBlocks"></div>
+    </div>
+
+  </section>
+</main>
+<script>
+/*__CORE__*/
+'use strict';
+const DAY = 86400000;
+
+function stripBOM(t){ return t.charCodeAt(0) === 0xFEFF ? t.slice(1) : t; }
+
+function parseCSV(text){
+  const rows = []; let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (inQ){
+      if (c === '"'){ if (text[i+1] === '"'){ field += '"'; i++; } else inQ = false; }
+      else field += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ','){ row.push(field); field = ''; }
+      else if (c === '\n'){ row.push(field); field = ''; if (row.length > 1 || row[0] !== '') rows.push(row); row = []; }
+      else if (c !== '\r') field += c;
+    }
+  }
+  if (field !== '' || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+function dayFromBR(s){
+  if (!s) return null;
+  const m = s.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!m) return null;
+  return Math.round(Date.UTC(+m[3], +m[2]-1, +m[1]) / DAY);
+}
+function dayFromISO(s){
+  const m = (s||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  return Math.round(Date.UTC(+m[1], +m[2]-1, +m[3]) / DAY);
+}
+function fmtDay(d, withYear){
+  if (d == null) return 'n/d';
+  const dt = new Date(d * DAY);
+  const dd = String(dt.getUTCDate()).padStart(2,'0');
+  const mm = String(dt.getUTCMonth()+1).padStart(2,'0');
+  return withYear ? dd+'/'+mm+'/'+dt.getUTCFullYear() : dd+'/'+mm;
+}
+function parseMoney(s){
+  if (!s) return 0;
+  const n = parseFloat(String(s).replace(/[R$\s,]/g, m => m === ',' ? '' : ''));
+  return isNaN(n) ? 0 : n;
+}
+function median(arr){
+  if (!arr.length) return null;
+  const a = [...arr].sort((x,y)=>x-y);
+  const mid = a.length >> 1;
+  return a.length % 2 ? a[mid] : (a[mid-1]+a[mid])/2;
+}
+
+/* Taxonomia de gravidade */
+const SEV_MAP = (() => {
+  const m = new Map();
+  const add = (lvl, arr) => arr.forEach(t => m.set(t.toLowerCase(), lvl));
+  add('extremo', ['pedido não entregue']);
+  add('grave', ['pedido atrasado acima de 1h30m','pedido atrasado acima de 30m e até 1h30m','retirou item da nota fiscal','dificuldade no contato com fornecedor','itens faltantes grave','pedido deixado na porta','itens em má qualidade grave','reposição de mais de 5 itens no mesmo dia','desconto de pedido não entregue']);
+  add('medio', ['pedido atrasado até 30m','itens em má qualidade médio','itens faltantes médio','reposição de 2 a 5 itens no mesmo dia','recibo de entrega faltante']);
+  add('leve', ['problemas de processo fornecedor (falta de nf, recibo, boleto, etc)','problemas de processo fornecedor','itens em má qualidade leve','itens faltantes leve','pedido não atendeu expectativas do cliente','reposição de até 2 itens no mesmo dia','boleto faltante','nf faltante','outros']);
+  add('cliente', ['problema do cliente','atraso do cliente','cliente pediu errado','erro operacional conéctar']);
+  add('combinado', ['reposição combinada']);
+  return m;
+})();
+function sevOf(tipo){ return SEV_MAP.get(tipo.trim().toLowerCase()) || 'leve'; }
+const SEV_LABEL = { extremo:'Extremo', grave:'Grave', medio:'Médio', leve:'Leve', cliente:'Cliente', combinado:'Combinado' };
+
+/* Lê o CSV bruto e monta o dataset por cliente */
+function buildDataset(text){
+  const rows = parseCSV(stripBOM(text));
+  if (rows.length < 2) return { error: 'O arquivo está vazio ou não tem linhas de dados.' };
+  const head = rows[0].map(h => h.trim());
+  const find = name => head.findIndex(h => h.toLowerCase() === name.toLowerCase());
+  const ix = {
+    id: find('ID_Cliente'),
+    nome: find('Cliente'),
+    data: find('Data Pedido'),
+    entrega: find('Data Entrega'),
+    total: find('Total Conéctar'),
+    status: find('Status Pedido'),
+    plus: find('Conéctar+'),
+    obs: find('Obs Conéctar'),
+    prob: find('Problema'),
+    forn: find('Nome'),
+    grupo: find('Negociação unificada'),
+    prime: find('Prime'),
+    resp: head.findIndex(h => /^resp/i.test(h))
+  };
+  const missing = ['id','data','total'].filter(k => ix[k] === -1)
+    .map(k => ({id:'ID_Cliente', data:'Data Pedido', total:'Total Conéctar'})[k]);
+  if (missing.length) return { error: 'Colunas obrigatórias não encontradas: ' + missing.join(', ') + '.' };
+
+  const clients = new Map();
+  let maxDay = null, used = 0, ignored = 0;
+  for (let r = 1; r < rows.length; r++){
+    const row = rows[r];
+    const st = ix.status > -1 ? (row[ix.status]||'').trim() : '';
+    if (st === 'Teste' || st === 'Recusado'){ ignored++; continue; }
+    const id = (row[ix.id]||'').trim();
+    const day = dayFromBR(row[ix.data]);
+    if (!id || day == null){ ignored++; continue; }
+    used++;
+    if (maxDay == null || day > maxDay) maxDay = day;
+    let c = clients.get(id);
+    if (!c){
+      c = { id, nome:'', orders:[], prime:false, plus:false, resp:'', grupo:'' };
+      clients.set(id, c);
+    }
+    const nome = ix.nome > -1 ? (row[ix.nome]||'').trim() : '';
+    if (nome) c.nome = nome;
+    const resp = ix.resp > -1 ? (row[ix.resp]||'').trim() : '';
+    if (resp) c.resp = resp;
+    const grupo = ix.grupo > -1 ? (row[ix.grupo]||'').trim() : '';
+    if (grupo) c.grupo = grupo;
+    if (ix.prime > -1 && (row[ix.prime]||'').trim().startsWith('1')) c.prime = true;
+    const plus = ix.plus > -1 && (row[ix.plus]||'').trim() !== '';
+    if (plus) c.plus = true;
+    c.orders.push({
+      day,
+      eday: ix.entrega > -1 ? dayFromBR(row[ix.entrega]) : null,
+      total: parseMoney(row[ix.total]),
+      prob: ix.prob > -1 ? (row[ix.prob]||'').trim() : '',
+      obs: ix.obs > -1 ? (row[ix.obs]||'').trim() : '',
+      forn: ix.forn > -1 ? (row[ix.forn]||'').trim() : ''
+    });
+  }
+  if (maxDay == null) return { error: 'Nenhum pedido válido encontrado no arquivo.' };
+  return { clients, maxDay, used, ignored };
+}
+
+/* Cálculos por cliente, sensíveis aos ajustes */
+function effGap(a, b, hol){
+  let g = b - a;
+  hol.forEach(h => { if (h > a && h < b) g--; });
+  return Math.max(1, g);
+}
+function effSince(last, cutoff, hol){
+  let g = cutoff - last;
+  hol.forEach(h => { if (h > last && h <= cutoff) g--; });
+  return Math.max(0, g);
+}
+const ST_RANK = { critico:5, risco:4, atencao:3, novo:2, ok:1 };
+const TIER_RANK = { 'G':4, 'M+':3, 'M-':2, 'P':1 };
+function tierOf(gmv){
+  if (gmv == null) return null;
+  if (gmv > 12000) return 'G';
+  if (gmv > 6000) return 'M+';
+  if (gmv > 4000) return 'M-';
+  return 'P';
+}
+
+function computeClient(c, cutoff, maxDay, opts){
+  const { mult, drop, holidays } = opts;
+  const all = c.orders;
+  const past = all.filter(o => o.day <= cutoff);
+  const m = {
+    id: c.id, nome: c.nome || c.id, prime: c.prime, plus: c.plus,
+    resp: c.resp, grupo: c.grupo, type: 'client'
+  };
+  /* falhas: janela de 14 dias até hoje (inclui o dia corrente, falha é acionável) */
+  m.failures = all.filter(o => o.prob && o.day > maxDay - 14)
+    .sort((a,b) => b.day - a.day)
+    .map(o => ({ day:o.day, forn:o.forn, obs:o.obs, tipos:o.prob.split(',').map(s=>s.trim()).filter(Boolean) }));
+  m.sevCount = { extremo:0, grave:0, medio:0, leve:0 };
+  m.failures.forEach(f => f.tipos.forEach(t => {
+    const s = sevOf(t);
+    if (m.sevCount[s] != null) m.sevCount[s]++;
+  }));
+
+  if (!past.length){
+    Object.assign(m, { days:[], base:null, since:0, last:null, lastDeliv:null, gmvMonth:null,
+      tier:null, delta:null, recent:0, prev:0, hist:0, status:'novo',
+      gravePlus: m.sevCount.extremo + m.sevCount.grave, failBoost:0,
+      sinal:'Primeiro pedido feito hoje. Sem histórico antes do corte.' });
+    m.urg = ST_RANK.novo * 1000;
+    return m;
+  }
+
+  const daySet = new Set(); past.forEach(o => daySet.add(o.day));
+  const days = [...daySet].sort((a,b)=>a-b);
+  m.days = days;
+  const gaps = [];
+  for (let i = 1; i < days.length; i++) gaps.push(effGap(days[i-1], days[i], holidays));
+  const base = median(gaps);
+  m.base = base;
+  const last = days[days.length-1];
+  m.last = last;
+  m.since = effSince(last, cutoff, holidays);
+  m.lastDeliv = past.reduce((mx,o) => o.eday != null && (mx == null || o.eday > mx) ? o.eday : mx, null);
+
+  const first = days[0];
+  m.hist = cutoff - first + 1;
+  let recent = 0, prev = 0;
+  past.forEach(o => {
+    if (o.day > cutoff - 28) recent += o.total;
+    else if (o.day > cutoff - 56) prev += o.total;
+  });
+  m.recent = recent; m.prev = prev;
+  m.delta = prev > 0 ? (recent - prev) / prev : null;
+
+  const totalSum = past.reduce((s,o) => s + o.total, 0);
+  const months = Math.max(0.5, m.hist / 30.44);
+  m.gmvMonth = totalSum / months;
+  m.tier = tierOf(m.gmvMonth);
+
+  const threshold = base != null ? Math.max(base * mult, base + 1) : null;
+  m.threshold = threshold;
+  const fora = threshold != null && m.since > threshold;
+  const late = base != null && m.since > base && !fora;
+  const quedaForte = m.delta != null && m.delta <= -drop;
+  const quedaMod = m.delta != null && m.delta <= -drop/2 && !quedaForte;
+
+  const fmt1 = n => (Math.round(n*10)/10).toLocaleString('pt-BR');
+  const pct = d => Math.abs(Math.round(d*100)) + '%';
+
+  if (m.hist < 30){
+    m.status = 'novo';
+    m.sinal = 'Cliente novo, ' + m.hist + 'd de histórico' +
+      (base != null ? '. Cadência observada de ' + fmt1(base) + 'd' : '. Ainda sem cadência definida') +
+      (m.since > 0 ? '. Último pedido há ' + m.since + 'd' : '. Pediu no dia do corte') + '.';
+  } else if (base == null){
+    if (m.since >= 15){ m.status = 'risco'; m.sinal = 'Pediu uma única vez e está parado há ' + m.since + 'd. Sem cadência para comparar.'; }
+    else if (m.since >= 7){ m.status = 'atencao'; m.sinal = 'Pediu uma única vez, há ' + m.since + 'd. Cadência ainda em formação.'; }
+    else { m.status = 'ok'; m.sinal = 'Pediu uma única vez, há ' + m.since + 'd.'; }
+  } else if (fora && quedaForte){
+    m.status = 'critico';
+    m.sinal = 'Fora de cadência (' + m.since + 'd parado, limite ' + fmt1(threshold) + 'd) e volume caiu ' + pct(m.delta) + ' nas últimas 4 semanas.';
+  } else if (fora){
+    m.status = 'risco';
+    m.sinal = 'Fora de cadência: ' + m.since + 'd sem pedir. Costuma pedir a cada ' + fmt1(base) + 'd (limite ' + fmt1(threshold) + 'd).';
+  } else if (quedaForte){
+    m.status = 'risco';
+    m.sinal = 'Queda forte de volume: ' + pct(m.delta) + ' abaixo das 4 semanas anteriores. Cadência segue normal.';
+  } else if (late && quedaMod){
+    m.status = 'atencao';
+    m.sinal = 'Escorregando: ' + m.since + 'd sem pedir (base ' + fmt1(base) + 'd) e volume caiu ' + pct(m.delta) + '.';
+  } else if (late){
+    m.status = 'atencao';
+    m.sinal = 'Atrasando: ' + m.since + 'd sem pedir, acima da base de ' + fmt1(base) + 'd. Ainda dentro do limite de ' + fmt1(threshold) + 'd.';
+  } else if (quedaMod){
+    m.status = 'atencao';
+    m.sinal = 'Volume caiu ' + pct(m.delta) + ' nas últimas 4 semanas. Cadência segue normal.';
+  } else {
+    m.status = 'ok';
+    m.sinal = 'No ritmo: pede a cada ' + fmt1(base) + 'd, último há ' + m.since + 'd' +
+      (m.delta != null && m.delta > 0.05 ? '. Volume subiu ' + pct(m.delta) : '') + '.';
+  }
+
+  const ratio = threshold != null ? Math.min(m.since / threshold, 8) : Math.min(m.since / 15, 8);
+  m.gravePlus = m.sevCount.extremo + m.sevCount.grave;
+  let failBoost = 0;
+  if (m.gravePlus > 0){
+    const w = m.tier === 'G' ? 120 : m.tier === 'M+' ? 50 : 20;
+    failBoost = Math.min(m.gravePlus, 4) * w;
+  }
+  m.failBoost = failBoost;
+  m.urg = ST_RANK[m.status] * 1000 + ratio * 50 + Math.log10((m.gmvMonth||0) + 1) + failBoost;
+  return m;
+}
+
+/* Consolida unidades visíveis de um grupo em uma entidade */
+function consolidateGroup(name, units){
+  const g = { type:'group', id:'g:'+name, nome:name, units, prime: units.some(u=>u.prime), plus: units.some(u=>u.plus) };
+  const resps = [...new Set(units.map(u=>u.resp).filter(Boolean))];
+  g.resp = resps.join(', ');
+  g.grupo = name;
+  g.gmvMonth = units.reduce((s,u)=> s + (u.gmvMonth||0), 0);
+  g.tier = tierOf(g.gmvMonth);
+  let worst = null;
+  units.forEach(u => { if (!worst || ST_RANK[u.status] > ST_RANK[worst.status]) worst = u; });
+  g.status = worst ? worst.status : 'ok';
+  g.since = Math.min(...units.map(u=>u.since));
+  g.last = units.reduce((mx,u)=> u.last != null && (mx==null || u.last>mx) ? u.last : mx, null);
+  g.lastDeliv = units.reduce((mx,u)=> u.lastDeliv != null && (mx==null || u.lastDeliv>mx) ? u.lastDeliv : mx, null);
+  const recent = units.reduce((s,u)=>s+u.recent,0), prev = units.reduce((s,u)=>s+u.prev,0);
+  g.delta = prev > 0 ? (recent-prev)/prev : null;
+  g.base = null;
+  const ds = new Set(); units.forEach(u => u.days.forEach(d=>ds.add(d)));
+  g.days = [...ds].sort((a,b)=>a-b);
+  g.sevCount = { extremo:0, grave:0, medio:0, leve:0 };
+  units.forEach(u => { for (const k in g.sevCount) g.sevCount[k] += u.sevCount[k]; });
+  g.failures = [];
+  g.contagion = units.some(u => u.groupContagion);
+  const nAct = units.filter(u => u.status==='critico'||u.status==='risco').length;
+  const nAtt = units.filter(u => u.status==='atencao').length;
+  const parts = [];
+  if (nAct) parts.push(nAct + (nAct>1?' unidades precisam':' unidade precisa') + ' de ação');
+  if (nAtt) parts.push(nAtt + ' em atenção');
+  g.sinal = (g.contagion ? 'Contágio de grupo: ' + nAct + ' unidades fora de cadência ao mesmo tempo, escalar ao decisor do grupo. ' : '') +
+    'Grupo com ' + units.length + ' unidade' + (units.length>1?'s':'') +
+    (parts.length ? ': ' + parts.join(', ') : ', todas no ritmo') +
+    '. Pior unidade: ' + (worst ? worst.nome : 'n/d') + '.';
+  g.urg = Math.max(...units.map(u=>u.urg)) + 0.5 + (g.contagion ? 500 : 0);
+  return g;
+}
+
+/* Roteador de churn: separa contágio de grupo e absorção por unidade irmã.
+   Roda sobre todas as unidades (visão completa), independente de filtros. */
+function routeGroups(metrics){
+  const byG = new Map();
+  metrics.forEach(u => {
+    u.route = null; u.routeNote = ''; u.groupContagion = false;
+    if (u.grupo){ if (!byG.has(u.grupo)) byG.set(u.grupo, []); byG.get(u.grupo).push(u); }
+  });
+  byG.forEach(units => {
+    if (units.length < 2) return;
+    const risk = units.filter(u => u.status==='critico' || u.status==='risco');
+    if (!risk.length) return;
+    const healthy = units.filter(u => u.status==='ok');
+    if (risk.length >= 2 && risk.length > healthy.length){
+      /* saída coordenada: várias unidades caindo juntas e nenhuma irmã segurando a demanda */
+      risk.forEach(u => { u.groupContagion = true; });
+    } else if (healthy.length){
+      /* absorção: unidade parada mas tem irmã ativa pedindo, provável falso positivo */
+      const ref = healthy.slice().sort((a,b)=> a.since - b.since)[0];
+      risk.forEach(u => {
+        u.route = 'absorcao';
+        u.routeNote = 'Irmã ativa no grupo (' + ref.nome + ', pediu há ' + ref.since + 'd). A demanda pode ter migrado entre unidades. Confirmar antes de tratar como churn de retenção.';
+      });
+    }
+  });
+}
+/*__ENDCORE__*/
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtBRL = v => v == null ? 'n/d' : 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+const fmtBRLk = v => {
+  if (!v) return 'R$ 0';
+  if (v >= 1e6) return 'R$ ' + (v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mi';
+  if (v >= 1000) return 'R$ ' + Math.round(v/1000) + 'k';
+  return 'R$ ' + Math.round(v);
+};
+const fmt1 = n => (Math.round(n*10)/10).toLocaleString('pt-BR');
+const fmtInt = n => n.toLocaleString('pt-BR');
+
+
+function sortEntities(arr){
+  const { key, dir } = state.sort;
+  const val = e => {
+    switch (key){
+      case 'nome': return e.nome.toLowerCase();
+      case 'tier': return e.tier ? TIER_RANK[e.tier] : null;
+      case 'base': return e.base;
+      case 'since': return e.since;
+      case 'deliv': return e.lastDeliv;
+      case 'delta': return e.delta;
+      case 'gmv': return e.gmvMonth;
+      default: return e.urg;
+    }
+  };
+  return [...arr].sort((a,b) => {
+    const va = val(a), vb = val(b);
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1;
+    if (vb == null) return -1;
+    if (va < vb) return -1 * dir;
+    if (va > vb) return 1 * dir;
+    return b.urg - a.urg;
+  });
+}
+
+
+function pulseSVG(e){
+  const W = 124, H = 16, win = 42, start = state.cutoff - win + 1;
+  const ds = (e.days || []).filter(d => d >= start && d <= state.cutoff);
+  let ticks = '';
+  ds.forEach(d => {
+    const x = ((d - start) / (win - 1)) * (W - 6) + 3;
+    ticks += '<rect x="' + (x-1).toFixed(1) + '" y="3" width="2" height="10" rx="1"/>';
+  });
+  let gap = '';
+  const last = ds.length ? ds[ds.length-1] : null;
+  if (last != null && last < state.cutoff - 0.5){
+    const x1 = ((last - start) / (win - 1)) * (W - 6) + 3;
+    gap = '<line x1="' + x1.toFixed(1) + '" y1="8" x2="' + (W-3) + '" y2="8" stroke="var(--st-' + e.status + ')" stroke-width="2" stroke-linecap="round" opacity=".5"/>';
+  }
+  return '<svg class="pulse" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true">' +
+    '<line x1="3" y1="8" x2="' + (W-3) + '" y2="8" stroke="currentColor" opacity=".13"/>' + gap +
+    '<g fill="currentColor" opacity=".8">' + ticks + '</g></svg>';
+}
+
+function sevChips(sc){
+  const P = { extremo:['extremo','extremos'], grave:['grave','graves'], medio:['médio','médios'], leve:['leve','leves'] };
+  let h = '';
+  for (const k of ['extremo','grave','medio','leve']){
+    if (sc[k]) h += '<span class="sev sev-' + k + '">' + sc[k] + ' ' + P[k][sc[k]>1?1:0] + '</span>';
+  }
+  return h ? '<span class="sev-chips" title="Falhas dos últimos 14 dias">' + h + '</span>' : '';
+}
+
+function tierBadge(t){
+  if (!t) return '<span class="cell">n/d</span>';
+  const cls = { 'G':'tier-G', 'M+':'tier-MP', 'M-':'tier-MM', 'P':'tier-P' }[t];
+  return '<span class="tier ' + cls + '">' + (t === 'M-' ? 'M−' : t) + '</span>';
+}
+
+function deltaCell(d){
+  if (d == null) return '<span class="cell">n/d</span>';
+  const p = Math.round(d*100);
+  if (p > 2) return '<span class="cell up">↑ ' + p + '%</span>';
+  if (p < -2) return '<span class="cell down">↓ ' + Math.abs(p) + '%</span>';
+  return '<span class="cell">' + (p>=0?'+':'') + p + '%</span>';
+}
+
+
+function rowHTML(e, isUnit){
+  const open = e.type === 'group' ? state.openGroups.has(e.id) : state.openDrill.has(e.id);
+  const tags = [];
+  if (e.prime) tags.push('<span class="tag tag-prime">Prime</span>');
+  if (e.type === 'group' && e.contagion) tags.push('<span class="tag tag-contagio">Contágio</span>');
+  if (isUnit && e.groupContagion) tags.push('<span class="tag tag-contagio">Contágio</span>');
+  if (isUnit && e.route === 'absorcao') tags.push('<span class="tag tag-absorcao">Irmã ativa</span>');
+  if (e.type === 'group') tags.push('<span class="tag tag-units">' + e.units.length + ' unidades</span>');
+  if (e.resp) tags.push('<span class="tag tag-resp">' + esc(e.resp) + '</span>');
+  else if (e.type !== 'group') tags.push('<span class="tag tag-grupo">Sem responsável</span>');
+  if (e.plus) tags.push('<span class="tag tag-plus">🍃 Conéctar+</span>');
+  if (e.type !== 'group' && e.grupo && !isUnit) tags.push('<span class="tag tag-grupo">' + esc(e.grupo) + '</span>');
+  return '<button class="row' + (e.prime ? ' is-prime' : '') + (e.route === 'absorcao' ? ' is-absorcao' : '') + (open ? ' open' : '') + '" style="--stc:var(--st-' + e.status + ')" ' +
+    'data-act="' + (e.type === 'group' ? 'group' : 'drill') + '" data-id="' + esc(e.id) + '" aria-expanded="' + open + '">' +
+    '<span class="car"><svg width="9" height="11" viewBox="0 0 9 11" fill="currentColor"><path d="M1 1.3v8.4c0 .8.9 1.3 1.6.8l6-4.2c.6-.4.6-1.3 0-1.7l-6-4.2C1.9 0 1 .5 1 1.3z"/></svg></span>' +
+    '<span class="cell-name"><span class="nm">' + (e.prime ? '<span class="star">★</span>' : '') + '<span class="txt">' + esc(e.nome) + '</span></span>' +
+    (tags.length ? '<span class="tags">' + tags.join('') + '</span>' : '') + '</span>' +
+    '<span>' + tierBadge(e.tier) + '</span>' +
+    '<span class="col-pulse">' + pulseSVG(e) + '</span>' +
+    '<span class="cell">' + (e.base != null ? '<strong>' + fmt1(e.base) + 'd</strong>' : 'n/d') + '</span>' +
+    '<span class="cell"><strong>' + e.since + 'd</strong></span>' +
+    '<span class="cell col-entrega">' + fmtDay(e.lastDeliv, false) + '</span>' +
+    '<span>' + deltaCell(e.delta) + '</span>' +
+    '<span class="cell">' + fmtBRL(e.gmvMonth) + '</span>' +
+    '<span class="cell-sinal"><span class="s-txt">' + esc(e.sinal) + '</span>' + sevChips(e.sevCount) + '</span>' +
+    '</button>';
+}
+
+
+const HEADERS = [
+  ['nome','Cliente / Grupo'], ['tier','Tier'], ['_pulse','Pulso 6 sem'], ['base','Cadência'],
+  ['since','Dias sem pedir'], ['deliv','Última entrega'], ['delta','Δ Vol 4 sem'], ['gmv','GMV/mês'], ['urg','Sinal']
+];
+function theadHTML(){
+  let h = '<div class="thead"><span></span>';
+  HEADERS.forEach(([k, lbl]) => {
+    const extra = k === 'deliv' ? ' col-entrega' : (k === '_pulse' ? ' col-pulse' : '');
+    if (k === '_pulse'){ h += '<span class="' + extra.trim() + '"><button disabled style="cursor:default">' + lbl + '</button></span>'; return; }
+    const on = state.sort.key === k;
+    h += '<span class="' + extra.trim() + '"><button data-sort="' + k + '" class="' + (on?'on':'') + '" aria-sort="' + (on ? (state.sort.dir>0?'ascending':'descending') : 'none') + '">' +
+      lbl + (on ? '<span class="arr">' + (state.sort.dir>0?'▲':'▼') + '</span>' : '') + '</button></span>';
+  });
+  return h + '</div>';
+}
+
+
+
+/* ===================== Estado ===================== */
+const state = {
+  ds: null, cutoff: null,
+  mult: 1.5, drop: 0.5, holidays: new Set(), includeToday: false,
+  metrics: [],
+  sort: { key: 'urg', dir: -1 },
+  sel: null, q: '',
+  openBlocks: new Set(['acao','atencao']),
+  openGroups: new Set(), openDrill: new Set()
+};
+
+const BLOCKS = [
+  { key:'acao',    title:'Precisam de ação', statuses:['critico','risco'], col:'var(--st-risco)',  soft:'var(--st-risco-soft)',  desc:'fora de cadência ou queda forte de volume' },
+  { key:'atencao', title:'Em atenção',       statuses:['atencao'],         col:'var(--st-atencao)', soft:'var(--st-atencao-soft)', desc:'começando a escorregar' },
+  { key:'novo',    title:'Clientes novos',   statuses:['novo'],            col:'var(--st-novo)',    soft:'var(--st-novo-soft)',    desc:'menos de 30 dias de histórico' },
+  { key:'ok',      title:'Na cadência',      statuses:['ok'],              col:'var(--st-ok)',      soft:'var(--st-ok-soft)',      desc:'dentro do padrão de compra' }
+];
+
+function recomputeMetrics(){
+  const opts = { mult: state.mult, drop: state.drop, holidays: state.holidays };
+  state.cutoff = state.ds.maxDay - (state.includeToday ? 0 : 1);
+  state.metrics = [];
+  state.ds.clients.forEach(c => state.metrics.push(computeClient(c, state.cutoff, state.ds.maxDay, opts)));
+  routeGroups(state.metrics);
+}
+
+/* ===================== Buckets ===================== */
+function isOrfaoAltoValor(u){ return !u.resp && (u.prime || u.tier === 'M+' || u.tier === 'G'); }
+function isOrfaoGrupo(u){ return !u.resp && !!u.grupo; }
+function gmvRiskOf(list){ return list.reduce((s,u) => (u.status==='critico'||u.status==='risco') ? s + (u.gmvMonth||0) : s, 0); }
+function riscoCount(list){ return list.filter(u => u.status==='critico'||u.status==='risco').length; }
+
+function buildGrid(){
+  const ops = new Map();
+  state.metrics.forEach(u => {
+    if (!u.resp) return;
+    if (!ops.has(u.resp)) ops.set(u.resp, { key:u.resp, units:[], grupos:new Set() });
+    const o = ops.get(u.resp); o.units.push(u); if (u.grupo) o.grupos.add(u.grupo);
+  });
+  const opCards = [...ops.values()].map(o => ({
+    key:o.key, label:o.key, type:'op',
+    clients:o.units.length, grupos:o.grupos.size,
+    risco:riscoCount(o.units), gmvRisk:gmvRiskOf(o.units),
+    sub:o.units.length + ' clientes · ' + o.grupos.size + ' grupos'
+  })).sort((a,b) => b.gmvRisk - a.gmvRisk || b.risco - a.risco || b.clients - a.clients);
+
+  const orf = state.metrics.filter(isOrfaoAltoValor);
+  const orfCard = { key:'orfaos', type:'orfaos', label:'Clientes órfãos',
+    clients:orf.length, grupos:new Set(orf.filter(u=>u.grupo).map(u=>u.grupo)).size,
+    risco:riscoCount(orf), gmvRisk:gmvRiskOf(orf), sub:'Prime, M+ e G sem operador' };
+
+  const orfGrp = state.metrics.filter(isOrfaoGrupo);
+  const grpCount = new Set(orfGrp.map(u=>u.grupo)).size;
+  const grpCard = { key:'grupos', type:'grupos', label:'Grupos sem dono',
+    clients:orfGrp.length, grupos:grpCount,
+    risco:riscoCount(orfGrp), gmvRisk:gmvRiskOf(orfGrp),
+    sub:grpCount + ' grupos · ' + orfGrp.length + ' unidades sem dono' };
+
+  return { opCards, orfCard, grpCard };
+}
+
+function cardActive(o){ return !!state.sel && state.sel.type === o.type && state.sel.key === o.key; }
+function statTile(v, l, risk){ return '<div class="oc-stat"><span class="s-val' + (risk?' risk':'') + '">' + v + '</span><span class="s-lbl">' + l + '</span></div>'; }
+function opCardHTML(o, special){
+  return '<button class="opcard' + (special?' special':'') + (cardActive(o)?' active':'') + '" data-bucket="' + esc(o.key) + '" data-type="' + o.type + '">' +
+    '<div class="oc-top"><span class="oc-name">' + esc(o.label) + '</span>' + (special?'<span class="oc-flag">sem dono</span>':'') + '</div>' +
+    '<div class="oc-sub">' + esc(o.sub) + '</div>' +
+    '<div class="oc-stats">' +
+      statTile(o.clients, o.type==='grupos' ? 'unidades' : 'clientes', false) +
+      statTile(o.risco, 'em risco', o.risco>0) +
+      statTile(fmtBRLk(o.gmvRisk), 'GMV risco', o.gmvRisk>0) +
+    '</div></button>';
+}
+
+function renderGrid(){
+  const g = buildGrid();
+  $('#gridSub').textContent = g.opCards.length + ' operadores com carteira · ' + fmtInt(state.ds.clients.size) + ' clientes · corte ' + fmtDay(state.cutoff, true);
+  let h = '';
+  g.opCards.forEach(o => h += opCardHTML(o, false));
+  h += opCardHTML(g.orfCard, true);
+  h += opCardHTML(g.grpCard, true);
+  $('#opgrid').innerHTML = h;
+  renderDetail();
+}
+
+/* ===================== Painel do bucket ===================== */
+function bucketUnits(){
+  const b = state.sel;
+  if (!b) return [];
+  if (b.type === 'op') return state.metrics.filter(u => u.resp === b.key);
+  if (b.type === 'orfaos') return state.metrics.filter(isOrfaoAltoValor);
+  if (b.type === 'grupos') return state.metrics.filter(isOrfaoGrupo);
+  return [];
+}
+function bucketEntities(){
+  const q = state.q.trim().toLowerCase();
+  let units = bucketUnits();
+  if (q) units = units.filter(u => u.nome.toLowerCase().includes(q) || u.id.toLowerCase().includes(q) || (u.grupo && u.grupo.toLowerCase().includes(q)));
+  const byG = new Map(), singles = [];
+  units.forEach(u => { if (u.grupo){ if (!byG.has(u.grupo)) byG.set(u.grupo, []); byG.get(u.grupo).push(u); } else singles.push(u); });
+  let ents = [...singles];
+  byG.forEach((us, name) => ents.push(us.length > 1 ? consolidateGroup(name, us) : us[0]));
+  return ents;
+}
+
+function bkKpi(v, l, risk){ return '<div class="bk-kpi"><span class="v' + (risk?' risk':'') + '">' + v + '</span><span class="l">' + l + '</span></div>'; }
+
+function drillHTML(e){
+  const facts = [
+    ['Cadência base', e.base != null ? 'a cada ' + fmt1(e.base) + ' dias' : 'sem base'],
+    ['Limite antes do alerta', e.threshold != null ? fmt1(e.threshold) + ' dias' : 'n/d'],
+    ['Último pedido', e.last != null ? fmtDay(e.last, true) + ' (' + e.since + 'd)' : 'n/d'],
+    ['GMV por mês', fmtBRL(e.gmvMonth)],
+    ['Últimas 4 semanas', fmtBRL(e.recent)],
+    ['4 semanas anteriores', e.prev > 0 ? fmtBRL(e.prev) : 'sem base'],
+    ['Tier', e.tier || 'n/d'],
+    ['Responsável', e.resp ? esc(e.resp) : 'Sem operador'],
+    ['Grupo', e.grupo ? esc(e.grupo) : 'Avulso'],
+    ['Conéctar+', e.plus ? 'Sim' : 'Não']
+  ];
+  const cl = state.ds.clients.get(e.id);
+  let ped = '';
+  if (cl){
+    const max = state.ds.maxDay;
+    const recent = cl.orders.filter(o => o.day > max - 14).sort((a,b) => b.day - a.day);
+    if (!recent.length){
+      ped = '<p class="fal-none">Sem pedidos nos últimos 14 dias.</p>';
+    } else {
+      ped = '<table class="ped-tbl"><thead><tr><th>Data</th><th>Fornecedor</th><th class="val">Valor</th><th>Ocorrência</th></tr></thead><tbody>';
+      recent.forEach(o => {
+        const occ = o.prob
+          ? o.prob.split(',').map(s=>s.trim()).filter(Boolean).map(t => { const s = sevOf(t); return '<span class="sev sev-' + s + '" title="' + SEV_LABEL[s] + '">' + esc(t) + '</span>'; }).join(' ')
+          : '<span class="ped-ok">sem ocorrência</span>';
+        ped += '<tr><td class="dt">' + fmtDay(o.day, false) + '</td><td>' + esc(o.forn || 'n/d') + '</td><td class="val">' + fmtBRL(o.total) + '</td><td class="ped-occ">' + occ + '</td></tr>';
+      });
+      ped += '</tbody></table>';
+    }
+  }
+  let routeBox = '';
+  if (e.contagion || e.groupContagion){
+    routeBox = '<div class="route-note rn-contagio"><b>Contágio de grupo.</b> Mais de uma unidade do grupo está fora de cadência ao mesmo tempo. Escale ao tomador de decisão do grupo em vez de tratar unidade a unidade.</div>';
+  } else if (e.route === 'absorcao'){
+    routeBox = '<div class="route-note rn-absorcao"><b>Possível absorção por irmã.</b> ' + esc(e.routeNote) + '</div>';
+  } else if (e.tier === 'G' && e.gravePlus > 0){
+    routeBox = '<div class="route-note rn-falhag"><b>Falha em cliente G.</b> Churn por falha é específico do tier G. Resolver a falha tende a pesar mais aqui. Priorizar a tratativa.</div>';
+  }
+  return '<div class="drill">' + routeBox + '<div class="drill-grid">' +
+    '<div><h4>Resumo</h4><div class="facts">' + facts.map(f => '<div class="fact"><span>' + f[0] + '</span><b>' + f[1] + '</b></div>').join('') + '</div></div>' +
+    '<div><h4>Pedidos dos últimos 14 dias</h4>' + ped + '</div>' +
+    '</div></div>';
+}
+
+function renderBlocks(entities, target){
+  let bh = '';
+  BLOCKS.forEach(b => {
+    const list = sortEntities(entities.filter(e => b.statuses.includes(e.status)));
+    const open = state.openBlocks.has(b.key);
+    let rows = '';
+    list.forEach(e => {
+      rows += '<div class="rowwrap">' + rowHTML(e, false);
+      if (e.type === 'group' && state.openGroups.has(e.id)){
+        let uh = '';
+        sortEntities(e.units).forEach(u => {
+          uh += '<div class="rowwrap">' + rowHTML(u, true) + (state.openDrill.has(u.id) ? drillHTML(u) : '') + '</div>';
+        });
+        rows += '<div class="units">' + uh + '</div>';
+      } else if (e.type !== 'group' && state.openDrill.has(e.id)){
+        rows += drillHTML(e);
+      }
+      rows += '</div>';
+    });
+    bh += '<div class="block' + (open?' open':'') + '" data-block="' + b.key + '">' +
+      '<button class="blk-h" data-act="block" data-id="' + b.key + '" aria-expanded="' + open + '">' +
+      '<span class="car"><svg width="9" height="11" viewBox="0 0 9 11" fill="currentColor"><path d="M1 1.3v8.4c0 .8.9 1.3 1.6.8l6-4.2c.6-.4.6-1.3 0-1.7l-6-4.2C1.9 0 1 .5 1 1.3z"/></svg></span>' +
+      '<span class="ttl" style="color:' + b.col + '">' + b.title + '</span>' +
+      '<span class="cnt" style="background:' + b.soft + ';color:' + b.col + '">' + list.length + '</span>' +
+      '<span class="desc">' + b.desc + '</span></button>' +
+      '<div class="blk-body">' + (list.length ? '<div class="tscroll">' + theadHTML() + rows + '</div>' : '<p class="blk-empty">Nenhuma conta aqui.</p>') + '</div>' +
+      '</div>';
+  });
+  $(target).innerHTML = bh;
+}
+
+function renderDetail(){
+  const d = $('#detail');
+  if (!state.sel){ d.hidden = true; return; }
+  d.hidden = false;
+  $('#dtTitle').textContent = state.sel.label;
+  const ents = bucketEntities();
+  const counts = { critico:0, risco:0, atencao:0, novo:0, ok:0 };
+  let gmvRisk = 0;
+  ents.forEach(e => {
+    counts[e.status]++;
+    if (e.type === 'group') e.units.forEach(u => { if (u.status==='critico'||u.status==='risco') gmvRisk += (u.gmvMonth||0); });
+    else if (e.status==='critico'||e.status==='risco') gmvRisk += (e.gmvMonth||0);
+  });
+  const acao = counts.critico + counts.risco;
+  $('#bkKpis').innerHTML =
+    bkKpi(acao, 'Precisam de ação', acao>0) +
+    bkKpi(fmtBRLk(gmvRisk), 'GMV em risco', gmvRisk>0) +
+    bkKpi(counts.atencao, 'Em atenção', false) +
+    bkKpi(counts.ok, 'Na cadência', false);
+  renderBlocks(ents, '#bkBlocks');
+}
+
+function selectCard(type, key){
+  if (state.sel && state.sel.type === type && state.sel.key === key){ closeDetail(); return; }
+  state.sel = { type, key, label: type==='op' ? key : type==='orfaos' ? 'Clientes órfãos' : 'Grupos sem dono' };
+  state.q = '';
+  state.openGroups.clear(); state.openDrill.clear();
+  state.openBlocks = new Set(['acao','atencao']);
+  const s = $('#bkSearch'); if (s) s.value = '';
+  renderGrid();
+  const d = $('#detail'); if (d && d.scrollIntoView) d.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function closeDetail(){ state.sel = null; renderGrid(); }
+
+/* ===================== Carga e eventos ===================== */
+function loadText(text, name){
+  const ds = buildDataset(text);
+  const err = $('#loadErr');
+  if (ds.error){ err.textContent = ds.error; err.hidden = false; return; }
+  err.hidden = true;
+  state.ds = ds;
+  recomputeMetrics();
+  $('#metaFile').textContent = name;
+  $('#metaInfo').textContent = fmtInt(ds.used) + ' pedidos · ' + fmtInt(ds.clients.size) + ' clientes · corte ' + fmtDay(state.cutoff, true) +
+    (ds.ignored ? ' · ' + fmtInt(ds.ignored) + ' linhas de teste ignoradas' : '');
+  $('#mastMeta').hidden = false;
+  $('#setup').hidden = true;
+  $('#board').hidden = false;
+  state.sel = null;
+  renderGrid();
+}
+function readFile(file){
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => loadText(String(r.result), file.name);
+  r.onerror = () => { const e = $('#loadErr'); e.textContent = 'Não foi possível ler o arquivo. Tente novamente.'; e.hidden = false; };
+  r.readAsText(file, 'utf-8');
+}
+
+$('#btnPick').addEventListener('click', () => $('#fileInput').click());
+$('#btnSwap').addEventListener('click', () => $('#fileInput').click());
+$('#fileInput').addEventListener('change', e => { readFile(e.target.files[0]); e.target.value = ''; });
+
+const dz = $('#dropZone');
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('over'); }));
+dz.addEventListener('drop', e => readFile(e.dataTransfer.files[0]));
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => e.preventDefault());
+
+$('#opgrid').addEventListener('click', e => {
+  const c = e.target.closest('[data-bucket]');
+  if (!c) return;
+  selectCard(c.dataset.type, c.dataset.bucket);
+});
+$('#dtClose').addEventListener('click', closeDetail);
+
+let bkTimer;
+$('#bkSearch').addEventListener('input', e => {
+  clearTimeout(bkTimer);
+  bkTimer = setTimeout(() => { state.q = e.target.value; renderDetail(); }, 160);
+});
+
+$('#bkBlocks').addEventListener('click', e => {
+  const sb = e.target.closest('[data-sort]');
+  if (sb){
+    const k = sb.dataset.sort;
+    if (state.sort.key === k) state.sort.dir *= -1;
+    else { state.sort.key = k; state.sort.dir = (k === 'nome' ? 1 : -1); }
+    renderDetail();
+    return;
+  }
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act, id = b.dataset.id;
+  if (act === 'block'){ state.openBlocks.has(id) ? state.openBlocks.delete(id) : state.openBlocks.add(id); }
+  else if (act === 'group'){ state.openGroups.has(id) ? state.openGroups.delete(id) : state.openGroups.add(id); }
+  else if (act === 'drill'){ state.openDrill.has(id) ? state.openDrill.delete(id) : state.openDrill.add(id); }
+  renderDetail();
+});
+
+</script>
+</body>
+</html>
